@@ -8,8 +8,13 @@ import { AiOutlineInteraction } from "react-icons/ai";
 import { ImConnection } from "react-icons/im";
 import { CustomButton, Loading, TextInput } from "../components";
 import { BgImage } from "../assets";
+import { apiRequest } from "../utils";
 
 const Register = () => {
+    const [errMsg, setErrMsg] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const dispatch = useDispatch();
+    
     const {
         register,
         handleSubmit,
@@ -19,22 +24,40 @@ const Register = () => {
         mode: "onChange",
     });
 
-    const onSubmit = async (data) => { };
+    const onSubmit = async (data) => { 
+        setIsSubmitting(true);
+        try {
+            const res = await apiRequest({
+                url: "/auth/register",
+                data: data,
+                method: "POST",
+            });
 
-    const [errMsg, setErrMsg] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const dispatch = useDispatch();
+            if(res?.status === "failed"){
+                setErrMsg(res);
+            } else{
+                setErrMsg(res);
+                setTimeout(()=>{
+                    window.location.replace("/login");
+                }, 5000);
+            }
+            setIsSubmitting(false);
+        } catch (error) {
+            console.log(error);
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className='bg-bgColor w-full h-[100vh] flex items-center justify-center p-6'>
             <div className='w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex flex-row-reverse bg-primary rounded-xl overflow-hidden shadow-xl'>
                 {/* LEFT */}
-                <div className='w-full lg:w-1/2 h-full p-10 2xl:px-20 flex flex-col justify-center '>
+                <div className='w-full lg:w-1/2 h-full p-10 2xl:px-20 flex flex-col justify-center'>
                     <div className='w-full flex gap-2 items-center mb-6'>
                         <div className='p-2 bg-[#065ad8] rounded text-white'>
                             <IoIosChatboxes />
                         </div>
-                        <span className='text-2xl text-[#065ad8] ' font-semibold>
+                        <span className='text-2xl text-[#065ad8] font-semibold'>
                             Momentily
                         </span>
                     </div>
