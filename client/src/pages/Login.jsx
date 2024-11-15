@@ -8,8 +8,13 @@ import { AiOutlineInteraction } from "react-icons/ai";
 import { ImConnection } from "react-icons/im";
 import { CustomButton, Loading, TextInput } from "../components";
 import { BgImage } from "../assets";
+import { apiRequest } from "../utils";
 
 const Login = () => {
+    const [errMsg, setErrMsg] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const dispatch = useDispatch();
+
     const {
         register,
         handleSubmit,
@@ -18,11 +23,34 @@ const Login = () => {
         mode: "onChange",
     });
 
-    const onSubmit = async (data) => { };
+    const onSubmit = async (data) => {
 
-    const [errMsg, setErrMsg] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const dispatch = useDispatch();
+        setIsSubmitting(true)
+        try {
+            const res = await apiRequest({
+                url: "/auth/login",
+                data: data,
+                method: "POST",
+            });
+
+            if (res?.status === "failed") {
+                setErrMsg(res);
+
+            } else {
+                setErrMsg("");
+                const newData = { token: res?.token, ...res?.user };
+                dispatch(UserLogin(newData));
+                window.location.replace("/");
+            }
+            setIsSubmitting(false);
+
+        } catch (error) {
+            console.log(error)
+            setIsSubmitting(false);
+        }
+
+    };
+
     return (
         <div className='bg-bgColor w-full h-[100vh] flex items-center justify-center p-6'>
             <div className='w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex bg-primary rounded-xl overflow-hidden shadow-xl'>

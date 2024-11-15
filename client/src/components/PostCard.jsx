@@ -8,7 +8,20 @@ import { useForm } from "react-hook-form";
 import TextInput from "./TextInput";
 import Loading from "./Loading";
 import CustomButton from "./CustomButton";
-import { postComments } from "../assets/data";
+import { apiRequest } from "../utils";
+// import { postComments } from "../assets/data";
+
+const getPostComments = async (id) => {
+    try {
+        const res = await apiRequest({
+            url: "/posts/comments" + id,
+            method: "GET",
+        });
+        return res?.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 const ReplyCard = ({ reply, user, handleLike }) => {
     return (
@@ -66,7 +79,44 @@ const CommentForm = ({ user, id, replyAt, getComments }) => {
         mode: "onChange",
     });
 
-    const onSubmit = async (data) => { };
+    const onSubmit = async (data) => {
+        setLoading(true);
+        setErrMsg("");
+
+        try {
+            const URL = !replyAt
+                ? "/posts/comment/" + id
+                : "/posts/reply-comment" + id;
+
+            const newData = {
+                comment: data?.comment,
+                from: user?.firstName + " " + user.lastName,
+                replyAt: replyAt,
+            };
+
+            const res = await apiRequest({
+                url: URL,
+                data: newData,
+                token: user?.token,
+                method: "POST",
+            });
+
+            if (res?.status === "failed") {
+                setErrMsg(res);
+            } else {
+                reset({
+                    comment: "",
+                });
+                setErrMsg("");
+                await getComments();
+            }
+            setLoading(false);
+
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    };
 
     return (
         <form
@@ -125,13 +175,16 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
     const [replyComments, setReplyComments] = useState(0);
     const [showComments, setShowComments] = useState(0);
 
-    const getComments = async () => {
+    const getComments = async (id) => {
         setReplyComments(0);
-
-        setComments(postComments);
+        const result = await getPostComments(id);
+        setComments(result);
         setLoading(false);
     };
-    const handleLike = async () => { };
+    const handleLike = async (uri) => {
+        await likePost(uri);
+        await getComments(post?._id);
+    };
 
     return (
         <div className='mb-2 bg-primary p-4 rounded-xl'>
@@ -140,7 +193,7 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
                     <img
                         src={post?.userId?.profileUrl ?? NoProfile}
                         alt={post?.userId?.firstName}
-                        className='w-14 h-14 object-cover rounded-full'
+                        className='w-12 h-12 md:w-14 md:h-14 object-cover rounded-full'
                     />
                 </Link>
 
@@ -152,9 +205,12 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
                             </p>
                         </Link>
                         <span className='text-ascent-2'>{post?.userId?.location}</span>
+                        <span className='md:hidden flex text-ascent-2 text-xs'>
+                            {moment(post?.createdAt ?? "2023-05-25").fromNow()}
+                        </span>
                     </div>
 
-                    <span className='text-ascent-2'>
+                    <span className='hidden md:flex text-ascent-2'>
                         {moment(post?.createdAt ?? "2023-05-25").fromNow()}
                     </span>
                 </div>
@@ -197,7 +253,8 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
                 className='mt-4 flex justify-between items-center px-3 py-2 text-ascent-2
       text-base border-t border-[#66666645]'
             >
-                <p className='flex gap-2 items-center text-base cursor-pointer'>
+                <p className='flex gap-2 items-center text-base cursor-pointer'
+                    onClick={() => handleLike("/posts/like/" + post?._id)}>
                     {post?.likes?.includes(user?._id) ? (
                         <BiSolidLike size={20} color='blue' />
                     ) : (
@@ -266,7 +323,11 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
                                     <p className='text-ascent-2'>{comment?.comment}</p>
 
                                     <div className='mt-2 flex gap-6'>
-                                        <p className='flex gap-2 items-center text-base text-ascent-2 cursor-pointer'>
+                                        <p className='flex gap-2 items-center text-base text-ascent-2 cursor-pointer'
+                                            onClick={() => {
+                                                handleLike("/posts/like-comment/" + comment?._id);
+                                            }}
+                                        >
                                             {comment?.likes?.includes(user?._id) ? (
                                                 <BiSolidLike size={20} color='blue' />
                                             ) : (

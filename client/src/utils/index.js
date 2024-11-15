@@ -3,33 +3,33 @@ import axios from "axios";
 const API_URL = 'http://localhost:8800';
 
 export const API = axios.create({
-    baseURL : API_URL,
+    baseURL: API_URL,
     responseType: "json",
 });
 
-export const apiRequest = async ({url, token, data, method}) => {
-try {
-    const result = await API(url,{
-        method: method || "GET",
-        data: data,
-        headers: {
-            "content-type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-        },
-    });
+export const apiRequest = async ({ url, token, data, method }) => {
+    try {
+        const result = await API(url, {
+            method: method || "GET",
+            data: data,
+            headers: {
+                "content-type": "application/json",
+                Authorization: token ? `Bearer ${token}` : "",
+            },
+        });
 
-    return result?.data;
-     
-} catch(error) {
-    const err = error.response.data;
-    console.log(err);
-    return {status:err.success, message:err.message};
-}
+        return result?.data;
+
+    } catch (error) {
+        const err = error.response.data;
+        console.log(err);
+        return { status: err.success, message: err.message };
+    }
 }
 
-export const handleFileUpload = async (uploadFile)=>{
+export const handleFileUpload = async (uploadFile) => {
     const formData = new FormData();
-    formData.append("file",uploadFile);
+    formData.append("file", uploadFile);
     formData.append("upload_preset", "socialmedia");
 
     try {
@@ -40,15 +40,15 @@ export const handleFileUpload = async (uploadFile)=>{
         return response.data.secure_url;
 
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
 }
 
-export const fetchPosts = async(token, dispatch, uri, data)=>{
+export const fetchPosts = async (token, dispatch, uri, data) => {
     try {
         const res = await apiRequest({
-            url: uri||"/posts",
+            url: uri || "/posts",
             token: token,
             method: "POST",
             data: data || {},
@@ -56,12 +56,12 @@ export const fetchPosts = async(token, dispatch, uri, data)=>{
 
         dispatch(setPosts(res?.data));
         return;
-    } catch(error){
-        console.log(error); 
+    } catch (error) {
+        console.log(error);
     }
 }
 
-export const likePost = async ({uri, token}) =>{
+export const likePost = async ({ uri, token }) => {
     try {
         const res = await apiRequest({
             url: uri,
@@ -74,20 +74,20 @@ export const likePost = async ({uri, token}) =>{
     }
 }
 
-export const deletePost = async (id, token) =>{
+export const deletePost = async (id, token) => {
     try {
         const res = await apiRequest({
             url: "/posts/" + id,
             token: token,
             method: "DELETE"
         });
-        return ;
+        return;
     } catch (error) {
         console.log(error);
     }
 }
 
-export const getUserInfo = async (token, id) =>{
+export const getUserInfo = async (token, id) => {
     try {
         const uri = id === undefined ? "/users/get-user" : "/users/get-user" + id;
         const res = await apiRequest({
@@ -95,8 +95,8 @@ export const getUserInfo = async (token, id) =>{
             token: token,
             method: "POST"
         });
-        
-        if(res?.message === "Authentication failed"){
+
+        if (res?.message === "Authentication failed") {
             localStorage.removeItem("user");
             window.alert("User session expired. Login again.");
             window.location.replace("/login");
@@ -107,13 +107,13 @@ export const getUserInfo = async (token, id) =>{
     }
 }
 
-export const sendFriendrequest = async (token, id) =>{
+export const sendFriendRequest = async (token, id) => {
     try {
         const res = await apiRequest({
             url: "/users/friend-request",
             token: token,
             method: "POST",
-            data: { requestTo: id},
+            data: { requestTo: id },
         });
         return;
     } catch (error) {
@@ -121,13 +121,13 @@ export const sendFriendrequest = async (token, id) =>{
     }
 }
 
-export const viewProfile = async (token, id) =>{
+export const viewProfile = async (token, id) => {
     try {
         const res = await apiRequest({
             url: "/users/profile-view",
             token: token,
             method: "POST",
-            data: {id},
+            data: { id },
         });
         return;
     } catch (error) {
