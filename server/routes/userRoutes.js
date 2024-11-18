@@ -1,18 +1,6 @@
 import express from "express";
 import path from "path";
-import {
-    acceptRequest,
-    changePassword,
-    friendRequest,
-    getFriendRequest,
-    getUser,
-    profileViews,
-    requestPasswordReset,
-    resetPassword,
-    suggestedFriends,
-    updateUser,
-    verifyEmail,
-} from "../controllers/userController.js";
+import { acceptRequest, changePassword, friendRequest, getFriendRequest, getUser, profileViews, requestPasswordReset, resetPassword, suggestedFriends, updateUser, verifyEmail, } from "../controllers/userController.js";
 import userAuth from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -36,11 +24,11 @@ router.post("/profile-view", userAuth, profileViews);
 router.post("/suggested-friends", userAuth, suggestedFriends);
 
 router.get("/verified", (req, res) => {
-    res.sendFile(path.join(__dirname, "./views/build", "index.html"));
+    res.sendFile(path.join(__dirname, "./views/verified.html"));
 });
 
 router.get("/resetpassword", (req, res) => {
-    res.sendFile(path.join(__dirname, "./views/build", "index.html"));
+    res.sendFile(path.join(__dirname, "./views/verified.html"));
 });
 
 export default router;
