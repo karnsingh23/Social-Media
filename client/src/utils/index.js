@@ -1,4 +1,5 @@
 import axios from "axios";
+import { SetPosts } from "../redux/postSlice"
 
 const API_URL = 'http://localhost:8800';
 
@@ -30,11 +31,11 @@ export const apiRequest = async ({ url, token, data, method }) => {
 export const handleFileUpload = async (uploadFile) => {
     const formData = new FormData();
     formData.append("file", uploadFile);
-    formData.append("upload_preset", "socialmedia");
+    formData.append("upload_preset", "MomentilyPosts");
 
     try {
         const response = await axios.post(
-            `https://api.cloudiary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_ID}/image/upload`,
+            `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_ID}/image/upload`,
             formData
         );
         return response.data.secure_url;
@@ -54,7 +55,7 @@ export const fetchPosts = async (token, dispatch, uri, data) => {
             data: data || {},
         });
 
-        dispatch(setPosts(res?.data));
+        dispatch(SetPosts(res?.data));
         return;
     } catch (error) {
         console.log(error);
@@ -121,7 +122,7 @@ export const sendFriendRequest = async (token, id) => {
     }
 }
 
-export const viewProfile = async (token, id) => {
+export const viewUserProfile = async (token, id) => {
     try {
         const res = await apiRequest({
             url: "/users/profile-view",

@@ -9,6 +9,7 @@ import { ImConnection } from "react-icons/im";
 import { CustomButton, Loading, TextInput } from "../components";
 import { BgImage } from "../assets";
 import { apiRequest } from "../utils";
+import { UserLogin } from "../redux/userSlice";
 
 const Login = () => {
     const [errMsg, setErrMsg] = useState("");
