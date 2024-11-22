@@ -6,13 +6,13 @@ import { NoProfile } from "../assets";
 import { BsFiletypeGif, BsPersonFillAdd } from "react-icons/bs";
 import { BiImages, BiSolidVideo } from "react-icons/bi";
 import { useForm } from "react-hook-form";
-import { apiRequest, deletePost, fetchPosts, handleFileUpload, likePost, sendFriendRequest } from "../utils";
+import { apiRequest, deletePost, fetchPosts, handleFileUpload, likePost, sendFriendRequest, getUserInfo } from "../utils";
 import { UserLogin } from "../redux/userSlice";
 // import { suggest, requests } from "../assets/data";
 
 const Home = () => {
     const { user, edit } = useSelector((state) => state.user);
-    const { posts } = useSelector((state) => state.user);
+    const { posts } = useSelector((state) => state.posts);
     const [friendRequest, setFriendRequest] = useState([]);
     const [suggestedFriends, setSuggestedFriends] = useState([]);
     const [errMsg, setErrMsg] = useState("");
@@ -37,7 +37,7 @@ const Home = () => {
             const uri = file && (await handleFileUpload(file));
             const newData = uri ? { ...data, image: uri } : data;
 
-            const res = await acceptFriendRequest({
+            const res = await apiRequest({
                 url: "/posts/create-post",
                 data: newData,
                 token: user?.token,

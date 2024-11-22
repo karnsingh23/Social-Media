@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { FriendsCard, Loading, PostCard, ProfileCard, TopBar, } from "../components";
@@ -13,7 +13,7 @@ const Profile = () => {
     const [userInfo, setUserInfo] = useState(user);
     const [loading, setLoading] = useState(false);
 
-    const uri = "/posts/get-user-post" + id;
+    const uri = "/posts/get-user-post/" + id;
 
     const getUser = async () => {
         const res = await getUserInfo(user?.token, id);

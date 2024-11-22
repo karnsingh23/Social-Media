@@ -24,11 +24,11 @@ router.post("/profile-view", userAuth, profileViews);
 router.post("/suggested-friends", userAuth, suggestedFriends);
 
 router.get("/verified", (req, res) => {
-    res.sendFile(path.join(__dirname, "./views/verified.html"));
+    res.sendFile(path.join(__dirname, "./views/dist", "index.html"));
 });
 
 router.get("/resetpassword", (req, res) => {
-    res.sendFile(path.join(__dirname, "./views/verified.html"));
+    res.sendFile(path.join(__dirname, "./views/dist", "index.html"));
 });
 
 export default router;

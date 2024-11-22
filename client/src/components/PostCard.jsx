@@ -14,7 +14,7 @@ import { apiRequest } from "../utils";
 const getPostComments = async (id) => {
     try {
         const res = await apiRequest({
-            url: "/posts/comments" + id,
+            url: "/posts/comments/" + id,
             method: "GET",
         });
         return res?.data;
@@ -86,7 +86,7 @@ const CommentForm = ({ user, id, replyAt, getComments }) => {
         try {
             const URL = !replyAt
                 ? "/posts/comment/" + id
-                : "/posts/reply-comment" + id;
+                : "/posts/reply-comment/" + id;
 
             const newData = {
                 comment: data?.comment,
