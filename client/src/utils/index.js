@@ -32,10 +32,11 @@ export const handleFileUpload = async (uploadFile) => {
     const formData = new FormData();
     formData.append("file", uploadFile);
     formData.append("upload_preset", "MomentilyPosts");
+    const cloudinaryId = process.env.REACT_APP_CLOUDINARY_ID;
 
     try {
         const response = await axios.post(
-            `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_ID}/image/upload/`,
+            `https://api.cloudinary.com/v1_1/${cloudinaryId}/image/upload/`,
             formData
         );
         return response.data.secure_url;
@@ -90,7 +91,7 @@ export const deletePost = async (id, token) => {
 
 export const getUserInfo = async (token, id) => {
     try {
-        const uri = id === undefined ? "/users/get-user" : "/users/get-user" + id;
+        const uri = id === undefined ? "/users/get-user" : "/users/get-user/" + id;
         const res = await apiRequest({
             url: uri,
             token: token,
