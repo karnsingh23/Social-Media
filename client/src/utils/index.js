@@ -32,7 +32,7 @@ export const handleFileUpload = async (uploadFile) => {
     const formData = new FormData();
     formData.append("file", uploadFile);
     formData.append("upload_preset", "MomentilyPosts");
-    const cloudinaryId = process.env.REACT_APP_CLOUDINARY_ID;
+    const cloudinaryId = import.meta.env.VITE_CLOUDINARY_ID;
 
     try {
         const response = await axios.post(
